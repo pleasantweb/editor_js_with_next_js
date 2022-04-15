@@ -1,0 +1,35 @@
+.container {
+  // padding: 0 2rem;
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  background-color: #bcb8b1;
+}
+
+.main {
+  width: inherit;
+  min-height: 100vh;
+  // text-align: center;
+  .heading{
+    width: inherit;
+    text-align: center;
+    h1{
+      padding: 10px;
+      margin: 0;
+      margin: auto;
+      font-size: 2.5rem;
+      color: black;
+      font-family: 'Montserrat', sans-serif;
+    }
+  }
+  
+  
+}
+
+
+@media (max-width: 600px) {
+  .grid {
+    width: 100%;
+    flex-direction: column;
+  }
+}
