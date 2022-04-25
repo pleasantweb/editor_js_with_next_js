@@ -1,18 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef} from 'react'
 import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
 import LinkTool from '@editorjs/link';
 import RawTool from '@editorjs/raw';
-import SimpleImage from '@editorjs/simple-image';
+// import SimpleImage from '@editorjs/simple-image';
 import ImageTool from '@editorjs/image';
 import Checklist from '@editorjs/checklist';
 import List from '@editorjs/list';
 import Quote from '@editorjs/quote';
 import CodeTool from '@editorjs/code';
-import EditorJSStyle,{ StyleInlineTool } from 'editorjs-style';
+import { StyleInlineTool } from 'editorjs-style';
 import Tooltip from 'editorjs-tooltip';
 import { CloudImage } from './UploadImage/CloudImage';
 import _ from 'lodash/debounce'
+
+
+type propType={
+  setContent:React.Dispatch<React.SetStateAction<string>>,
+  content:string
+}
 
 const DEFAULT_INITIAL_DATA = () => {
     return {
@@ -21,7 +27,7 @@ const DEFAULT_INITIAL_DATA = () => {
         {
           "type": "paragraph",
           "data": {
-            "text": "This is my awesome editor!",
+            "text": "Start writing here !!!",
             "level": 1
           }
         },
@@ -30,9 +36,11 @@ const DEFAULT_INITIAL_DATA = () => {
   }
 const EDITTOR_HOLDER_ID = 'editorjs';
 
-const CustomEditor = () => {
+const CustomEditor = (props:propType) => {
+
+    const {setContent,content} = props
+
     const isInstance = useRef<EditorJS|null>(null)
-    const [editorData, setEditorData] = useState<string>()
 
 /////////////////////////////////////////////////////////////////////////
     useEffect(() => {
@@ -47,10 +55,11 @@ const CustomEditor = () => {
         }
       }, []);
 //////////////////////////////////////////////////////////////////////////////
-const onFileChange=async(file:File)=>{
-console.log(file);
 
-  // let files : FileList | null = e.currentTarget.files
+     // save images in Cloudinary
+     
+const onFileChange=async(file:File)=>{
+
   const form_data = new FormData()
   let preset = process.env.NEXT_PUBLIC_PRESET
   if(preset){
@@ -65,24 +74,18 @@ console.log(file);
          
           return imageUrl
       }else{
-        return 'nahi hai image'
+        return 'nahi hai image' // <-- put an error image url here
       }
   }
-// }
-return ' nahi hai hai image'
+
+return ' nahi hai hai image' // <-- put an error image url here
 }
-// console.log('yo');
-// var debounce_fun = _(function () {
-//   console.log('Function debounced after 1000ms!');
-//   }, 1000);
-  
-// debounce_fun();
+
 //////////////////////////////////////////////////////////////////////////////////
     const initEditor = () => {
         const editor = new EditorJS({
           holder: EDITTOR_HOLDER_ID,
-        //   logLevel: "ERROR",
-        //   data: editorData,
+          data: content === '' ? (DEFAULT_INITIAL_DATA()) :(JSON.parse(content)),
           onReady: () => {
             isInstance.current = editor
           },
@@ -108,10 +111,11 @@ return ' nahi hai hai image'
                 holder: 'editorId',
               }
             },
-            // header:Header,
+           
            
             header: {
               class: Header,
+              inlineToolbar: true,
               config: {
                 defaultLevel: 1
               }
@@ -160,7 +164,10 @@ return ' nahi hai hai image'
                 captionPlaceholder: 'Quote\'s author',
               },
             },
-            code: CodeTool,
+            code: {
+              class:CodeTool,
+              inlineToolbar: true,
+            }
           },
 
 
@@ -168,19 +175,18 @@ return ' nahi hai hai image'
        async function contents(){
          const output = await editor.save()
          const content = JSON.stringify(output)
-         setEditorData(content) 
+         setContent(content) 
     
         }
       };
-      console.log(editorData);
+     
       
     return (
       <>
     <div className='Editor_class' >
          <div id={EDITTOR_HOLDER_ID}> </div>
     </div>
-    <button onClick={()=>console.log(editorData)
-    } className='save_btn'>Save</button>
+   
     </>
   )
 }
